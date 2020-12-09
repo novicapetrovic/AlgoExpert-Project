@@ -147,6 +147,60 @@ func isValidSubsequence2(_ array: [Int], _ sequence: [Int]) -> Bool {
 
 // Question 3 - Three Number Sum
 
+// Solution 1 - Brute Force (Not a solution on AlgoExpert)
+// Time - O(n^3)
+// TODO: Space - O(?)
+func threeNumberSum(array: inout [Int], targetSum: Int) -> [[Int]] {
+    var output = [[Int]]()
+    array.sort()
+    
+    for i in 0 ..< array.count - 2 {
+        for j in i + 1 ..< array.count - 1 {
+            for k in j + 1 ..< array.count {
+                if array[i] + array[j] + array[k] == targetSum {
+                    output.append([array[i], array[j], array[k]])
+                }
+            }
+        }
+    }
+    
+    return output
+}
+
+// Notes:
+// Since it's a requirement in this question that the triplets we return are sorted, I have put array.sort() at the beginning to solve that problem.
+
+// Solution 2 -
+func threeNumberSum2(array: inout [Int], targetSum: Int) -> [[Int]] {
+    array.sort()
+    var output = [[Int]]()
+    
+    for i in 0 ..< array.count - 2 {
+        let base = i
+        var left = base + 1
+        var right = array.count - 1
+        
+        while left < right {
+            let currentSum = array[base] + array[left] + array[right]
+            
+            if currentSum == targetSum {
+                output.append([array[base], array[left], array[right]])
+                left = left + 1
+                right = right - 1
+            } else if array[base] + array[left] + array[right] < targetSum {
+                left += 1
+            } else if array[base] + array[left] + array[right] > targetSum {
+                right -= 1
+            }
+        }
+    }
+    
+    return output
+}
+
+// Notes:
+// In this solution, I'm fixing a base pointera the beginning, then using a similar approach as in two number sum by using a left and a right pointer. Note that when we've found a solution, it's safe to both increment the left pointer and decrement the right pointer as only doing one would not result in a solution since all the values in the array are unique.
+
 // Question 4 - Smallest Difference
 
 // Question 5 - Move Element To End
