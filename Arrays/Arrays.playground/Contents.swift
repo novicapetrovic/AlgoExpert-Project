@@ -105,6 +105,42 @@ func twoNumberSum3(_ array: inout [Int], _ targetSum: Int) -> [Int] {
 
 // Question 2 - Validate SubSequence
 
+// Solution 1 - While loop & indexs (PREFERRED SOLUTION)
+// Time - O(n)
+// Space - O(1)
+func isValidSubsequence(_ array: [Int], _ sequence: [Int]) -> Bool {
+    var arrayIndex = 0
+    var sequenceIndex = 0
+    
+    while arrayIndex < array.count, sequenceIndex < sequence.count {
+        if array[arrayIndex] == sequence[sequenceIndex] {
+            sequenceIndex += 1
+        }
+        arrayIndex += 1
+    }
+    return sequenceIndex == sequence.count
+}
+
+// Notes:
+// In this solution, we start with two indexes set at 0, arrayIndex any sequenceIndex. We then use a while loop on the condition that the indexes haven't reached the end of their arrays, checking at each point to see if the numbers at each index match. If they match, we can increment the sequence index.
+
+// Solution 2
+// Time - O(n)
+// Space - O(1)
+func isValidSubsequence2(_ array: [Int], _ sequence: [Int]) -> Bool {
+    var seqIdx = 0
+    
+    for value in array {
+        if seqIdx == sequence.count {
+            break
+        }
+        if value == sequence[seqIdx] {
+            seqIdx += 1
+        }
+    }
+    return seqIdx == sequence.count
+}
+
 // --------------------------------------------------------------------------------------------------------------------------------
 
 // Medium - (Q3-Q8)
