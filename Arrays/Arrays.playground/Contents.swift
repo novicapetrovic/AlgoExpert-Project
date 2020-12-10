@@ -81,6 +81,10 @@ func twoNumberSum3(_ array: inout [Int], _ targetSum: Int) -> [Int] {
     var leftIndex = 0
     var rightIndex = array.count - 1
     
+//    could also use this
+//    var leftIndex = array.startIndex
+//    var rightIndex = array.endIndex - 1
+    
     while leftIndex < rightIndex {
         let leftMost = array[leftIndex]
         let rightMost = array[rightIndex]
@@ -101,6 +105,9 @@ func twoNumberSum3(_ array: inout [Int], _ targetSum: Int) -> [Int] {
 
 // Notes:
 // In this solution, we start with two pointers, a leftIndex and a rightIndex. We start by summing the two pointers, and if the sum is greater than the target sum, we move the right pointer to the left, making the sum smaller, and vice versa.
+
+// Question: When you call array.sort() in swift, what type of sort is swift doing under the hood?
+
 
 
 // Question 2 - Validate SubSequence
@@ -170,7 +177,7 @@ func threeNumberSum(array: inout [Int], targetSum: Int) -> [[Int]] {
 // Notes:
 // Since it's a requirement in this question that the triplets we return are sorted, I have put array.sort() at the beginning to solve that problem.
 
-// Solution 2 -
+// Solution 2 - For loop & while loop (PREFERRED SOLUTION)
 func threeNumberSum2(array: inout [Int], targetSum: Int) -> [[Int]] {
     array.sort()
     var output = [[Int]]()
@@ -201,7 +208,65 @@ func threeNumberSum2(array: inout [Int], targetSum: Int) -> [[Int]] {
 // Notes:
 // In this solution, I'm fixing a base pointera the beginning, then using a similar approach as in two number sum by using a left and a right pointer. Note that when we've found a solution, it's safe to both increment the left pointer and decrement the right pointer as only doing one would not result in a solution since all the values in the array are unique.
 
+
+
 // Question 4 - Smallest Difference
+
+// Solution 1 - Brute Force
+func smallestDifference(arrayOne: inout [Int], arrayTwo: inout [Int]) -> [Int] {
+    var smallest = Int.max
+    var output = [Int]()
+    
+    for i in 0 ..< arrayOne.count {
+        for j in 0 ..< arrayTwo.count {
+            let difference = abs(arrayOne[i] - arrayTwo[j])
+            if difference < smallest {
+                smallest = difference
+                output = []
+                output.append(contentsOf: [arrayOne[i], arrayTwo[j]])
+            }
+        }
+    }
+    
+    return output
+}
+
+// Solution 2 - Using pointers (PREFERRED SOLUTION)
+func smallestDifference2(arrayOne: inout [Int], arrayTwo: inout [Int]) -> [Int] {
+    arrayOne.sort()
+    arrayTwo.sort()
+    
+    var indexOne = 0
+    var indexTwo = 0
+    
+    var smallestDifference = Int.max
+    var output = [Int]()
+    
+    while indexOne < arrayOne.count, indexTwo < arrayTwo.count {
+        let firstNum = arrayOne[indexOne]
+        let secondNum = arrayTwo[indexTwo]
+        
+        let current = firstNum - secondNum
+        
+        if abs(current) < smallestDifference {
+            smallestDifference = abs(current)
+            output = []
+            output.append(contentsOf: [firstNum, secondNum])
+        }
+        
+        if firstNum > secondNum {
+            indexTwo += 1
+        } else if firstNum < secondNum {
+            indexOne += 1
+        } else {
+            return [firstNum, secondNum]
+        }
+    }
+    
+    return output
+}
+
+
 
 // Question 5 - Move Element To End
 
