@@ -81,10 +81,6 @@ func twoNumberSum3(_ array: inout [Int], _ targetSum: Int) -> [Int] {
     var leftIndex = 0
     var rightIndex = array.count - 1
     
-//    could also use this
-//    var leftIndex = array.startIndex
-//    var rightIndex = array.endIndex - 1
-    
     while leftIndex < rightIndex {
         let leftMost = array[leftIndex]
         let rightMost = array[rightIndex]
@@ -269,6 +265,62 @@ func smallestDifference2(arrayOne: inout [Int], arrayTwo: inout [Int]) -> [Int] 
 
 
 // Question 5 - Move Element To End
+
+// Solution 1 - Swapping method (PREFERRED METHOD)
+func moveElementToEnd(_ array: inout [Int], _ toMove: Int) -> [Int] {
+    var leftIndex = 0
+    var rightIndex = array.count - 1
+    
+    while leftIndex < rightIndex {
+        while leftIndex < rightIndex, array[rightIndex] == toMove {
+            rightIndex -= 1
+        }
+        
+        if array[leftIndex] == toMove {
+            (array[leftIndex], array[rightIndex]) = (array[rightIndex], array[leftIndex])
+        }
+        leftIndex += 1
+    }
+    
+    return array
+}
+
+// Notes:
+// This question taught me 2 things:
+// 1) It can sometimes be necessary to use 2 while loops, where one while loop is a subset of the other (this surprised me).
+// 2) The swapping technique with a left and right pointer
+
+// Solution 2 - My original solution (way too over complicated)
+func moveElementToEnd2(_ array: inout [Int], _ toMove: Int) -> [Int] {
+    var counter = 0
+    var toMoveIdxs = [Int]()
+    
+    if array.isEmpty {
+        return []
+    }
+    
+    for i in 0...array.count - 1 {
+        if array[i] == toMove {
+            toMoveIdxs.append(i)
+        }
+    }
+    
+    for i in 0...array.count - 1 {
+        if toMoveIdxs.contains(i) {
+            array.remove(at: i - counter)
+            counter += 1
+        }
+    }
+    
+    if toMoveIdxs.isEmpty {
+        return array
+    } else {
+        for _ in 0...toMoveIdxs.count - 1 {
+            array.append(toMove)
+        }
+    }
+    return array
+}
 
 // Question 6 - Monotonic Array
 
