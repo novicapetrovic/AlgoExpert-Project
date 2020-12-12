@@ -322,7 +322,69 @@ func moveElementToEnd2(_ array: inout [Int], _ toMove: Int) -> [Int] {
     return array
 }
 
+
+
 // Question 6 - Monotonic Array
+
+// Solution 1 - Use a temp array to store direction
+// Time - O(n)
+// Space - O(1)
+func isMonotonic(array: [Int]) -> Bool {
+    var temp = [String]()
+    
+    if array.count < 3 {
+        return true
+    }
+    
+    for i in 0 ..< array.count - 1 {
+        let difference = array[i+1] - array[i]
+        if difference > 0 {
+            temp.append("+")
+        } else if difference < 0 {
+            temp.append("-")
+        }
+        
+        if temp.contains("+") && temp.contains("-") {
+            return false
+        }
+    }
+    return true
+}
+
+
+// Solution 2 - Compare first and last to get a direction (PREFERRED SOLUTION)
+// Time - O(n)
+// Space - O(1)
+func isMonotonic2(array: [Int]) -> Bool {
+    if array.isEmpty || array.count == 1 {
+        return true
+    }
+    
+    let first = array[0]
+    let last = array[array.count - 1]
+    let direction = last - first
+    
+    if direction > 0 {
+        for i in 0...array.count - 2 {
+            if array[i+1] < array[i] {
+                return false
+            }
+        }
+    } else if direction < 0 {
+        for i in 0...array.count - 2 {
+            if array[i+1] > array[i] {
+                return false
+            }
+        }
+    } else if direction == 0 {
+        for i in 0...array.count - 2 {
+            if array[i+1] != array[i] {
+                return false
+            }
+        }
+    }
+    return true
+}
 
 // Question 7 - Spiral Traverse
 
