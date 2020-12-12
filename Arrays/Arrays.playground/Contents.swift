@@ -174,6 +174,8 @@ func threeNumberSum(array: inout [Int], targetSum: Int) -> [[Int]] {
 // Since it's a requirement in this question that the triplets we return are sorted, I have put array.sort() at the beginning to solve that problem.
 
 // Solution 2 - For loop & while loop (PREFERRED SOLUTION)
+// Time - O(n^2)
+// Space - O(n)
 func threeNumberSum2(array: inout [Int], targetSum: Int) -> [[Int]] {
     array.sort()
     var output = [[Int]]()
@@ -209,6 +211,8 @@ func threeNumberSum2(array: inout [Int], targetSum: Int) -> [[Int]] {
 // Question 4 - Smallest Difference
 
 // Solution 1 - Brute Force
+// Time - O(n^2)
+// Space - O(1)
 func smallestDifference(arrayOne: inout [Int], arrayTwo: inout [Int]) -> [Int] {
     var smallest = Int.max
     var output = [Int]()
@@ -228,6 +232,8 @@ func smallestDifference(arrayOne: inout [Int], arrayTwo: inout [Int]) -> [Int] {
 }
 
 // Solution 2 - Using pointers (PREFERRED SOLUTION)
+// TODO: Time - O(?)
+// Space - O(1)
 func smallestDifference2(arrayOne: inout [Int], arrayTwo: inout [Int]) -> [Int] {
     arrayOne.sort()
     arrayTwo.sort()
@@ -267,6 +273,8 @@ func smallestDifference2(arrayOne: inout [Int], arrayTwo: inout [Int]) -> [Int] 
 // Question 5 - Move Element To End
 
 // Solution 1 - Swapping method (PREFERRED METHOD)
+// Time - O(n)
+// Space - O(1)
 func moveElementToEnd(_ array: inout [Int], _ toMove: Int) -> [Int] {
     var leftIndex = 0
     var rightIndex = array.count - 1
@@ -291,6 +299,8 @@ func moveElementToEnd(_ array: inout [Int], _ toMove: Int) -> [Int] {
 // 2) The swapping technique with a left and right pointer
 
 // Solution 2 - My original solution (way too over complicated)
+// Time - O(n)
+// TODO: Space - O(?)
 func moveElementToEnd2(_ array: inout [Int], _ toMove: Int) -> [Int] {
     var counter = 0
     var toMoveIdxs = [Int]()
