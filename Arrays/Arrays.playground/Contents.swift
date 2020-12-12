@@ -396,7 +396,185 @@ func isMonotonic2(array: [Int]) -> Bool {
     return true
 }
 
-// Question 7 - Spiral Traverse
+
+
+// Question 7 - Spiral Traverse (VERY COMMON INTERVIEW QUESTION)
+
+// Solution 1 - Perimeter, broken  down by helper functions (NOT PASSING TESTS AS CURRENT SOLUTION DOESN'T HANDLE SINGLE ROW OR COLUMN EDGE CASES)
+func spiralTraverse(array: [[Int]]) -> [Int] {
+    var output = [Int]()
+    var startRowIndex = 0
+    var endColumnIndex = array[0].count - 1
+    var endRowIndex = array.count - 1
+    var startColumnIndex = 0
+    
+    while startRowIndex <= endRowIndex && startColumnIndex <= endColumnIndex {
+        let startRow = createRow(array: array, start: startColumnIndex, end: endColumnIndex, row: startRowIndex)
+        let endColumn = createColumn(array: array, start: startRowIndex, end: endRowIndex, column: endColumnIndex)
+        var endRow = createRow(array: array, start: startColumnIndex, end: endColumnIndex, row: endRowIndex)
+        var startColumn = createColumn(array: array, start: startRowIndex, end: endRowIndex, column: startColumnIndex)
+        
+        
+        let perimeter = traversePerimeter(startRow: startRow, endColumn: endColumn, endRow: &endRow, startColumn: &startColumn)
+        output.append(contentsOf: perimeter)
+        
+        startRowIndex += 1
+        endColumnIndex -= 1
+        endRowIndex -= 1
+        startColumnIndex += 1
+    }
+    
+    return output
+}
+
+func createRow(array: [[Int]], start: Int, end: Int, row: Int) -> [Int] {
+    var startRow = [Int]()
+    
+    for i in start ... end {
+        startRow.append(array[row][i])
+    }
+    
+    return startRow
+}
+
+func createColumn(array: [[Int]], start: Int, end: Int, column: Int) -> [Int] {
+    var endColumn = [Int]()
+    
+    for i in start ... end {
+        endColumn.append(array[i][column])
+    }
+    
+    return endColumn
+}
+
+func traversePerimeter(startRow: [Int], endColumn: [Int], endRow: inout [Int], startColumn: inout [Int]) -> [Int] {
+    var output = [Int]()
+    
+    if startRow.count == 1 {
+        return startRow
+    } else if startColumn.count == 1 {
+        return startColumn
+    }
+    
+    for i in 0 ..< startRow.count {
+        output.append(startRow[i])
+    }
+    
+    for i in 1 ..< endColumn.count {
+        output.append(endColumn[i])
+    }
+    
+    endRow.reverse()
+    for i in 1 ..< endRow.count {
+        output.append(endRow[i])
+    }
+    
+    startColumn.reverse()
+    for i in 1 ..< startColumn.count - 1 {
+        output.append(startColumn[i])
+    }
+    
+    return output
+}
+
+
+// Solution 2 - Perimeter approach, Iterative solution
+// Time - O(n)
+// Space - O(n)
+
+func spiralTraverse4(array: [[Int]]) -> [Int] {
+    // Indexes
+    var startRow = 0
+    var endRow = array.count - 1
+    var startCol = 0
+    var endCol = array[0].count - 1
+    
+    var output = [Int]()
+    
+    while startRow <= endRow, startCol <= endCol {
+        
+        // Sweep left to right
+        for col in stride(from: startCol, through: endCol, by: 1) {
+            output.append(array[startRow][col])
+        }
+        
+        // Sweep top to bottom
+        for row in stride(from: startRow + 1, through: endRow, by: 1) {
+            output.append(array[row][endCol])
+        }
+        
+        // Sweep right to left
+        for col in stride(from: endCol - 1, through: startCol, by: -1) {
+            // We need to check if startRow == endRow, because if it does, we have already counted this row in the left to right sweep.
+            if startRow == endRow {
+                break
+            }
+            
+            output.append(array[endRow][col])
+        }
+        
+        // Sweep bottom to top
+        for row in stride(from: endRow - 1, through: startRow + 1, by: -1) {
+            // We need to check if startCol == endCol, because if it does, we have already counted this column in the top to bottom sweep.
+            if startCol == endCol {
+                break
+            }
+            
+            output.append(array[row][startCol])
+        }
+        
+        startRow += 1
+        endRow -= 1
+        startCol += 1
+        endCol -= 1
+    }
+    
+    return output
+}
+
+// Note:
+// This solution uses a lot less code than solution 1, and the good thing about this solution is that unlike solution 1 which uses a traversePerimeter function that takes in a set of input arrays, this uses indexes to handle the edge cases (if startRow = endRow break)
+
+
+// Solution 3 - Perimeter approach, recursive solution
+// Time - O(n)
+// Space - O(n)
+func spiralTraverse3(array: [[Int]]) -> [Int] {
+    var output = [Int]()
+    spiralFill(array, 0, array.count - 1, 0, array[0].count - 1, &output)
+    return output
+}
+
+func spiralFill(_ array: [[Int]], _ startRow: Int, _ endRow: Int, _ startCol: Int, _ endCol: Int, _ output: inout [Int]) {
+    if startRow > endRow || startCol > endCol {
+        return
+    }
+    
+    for col in stride(from: startCol, through: endCol, by: 1) {
+        output.append(array[startRow][col])
+    }
+    
+    for row in stride(from: startRow + 1, through: endRow, by: 1) {
+        output.append(array[row][endCol])
+    }
+    
+    for col in stride(from: endCol - 1, through: startCol, by: -1) {
+        if startRow == endRow {
+            break
+        }
+        output.append(array[endRow][col])
+    }
+    
+    for row in stride(from: endRow - 1, through: startRow + 1, by: -1) {
+        if startCol == endCol {
+            break
+        }
+        output.append(array[row][startCol])
+    }
+    
+    spiralFill(array, startRow + 1, endRow - 1, startCol + 1, endCol - 1, &output)
+}
+
 
 // Question 8 - Longest Peak
 
