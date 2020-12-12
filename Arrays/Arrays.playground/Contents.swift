@@ -576,7 +576,95 @@ func spiralFill(_ array: [[Int]], _ startRow: Int, _ endRow: Int, _ startCol: In
 }
 
 
+
 // Question 8 - Longest Peak
+
+// Solution 1 - Find potential peaks by comparing the left and right, then iterate through the potential peaks and count the left & right sides.
+// Time - O(n)
+// Space - O(n)
+func longestPeak(array: [Int]) -> Int {
+    var longestPeak = 0
+    var potentialPeaks = [Int]()
+    
+    if array.count < 3 {
+        return 0
+    }
+    
+    for i in 1 ..< array.count - 1 {
+        if array[i] > array[i-1] && array[i] > array[i+1] {
+            potentialPeaks.append(i)
+        }
+    }
+
+    for i in 0 ..< potentialPeaks.count {
+        var leftSide = 0
+        var j = potentialPeaks[i]
+        while j-1 >= 0, array[j-1] < array[j] {
+            leftSide += 1
+            j -= 1
+        }
+
+        var rightSide = 0
+        var k = potentialPeaks[i]
+        while k+1 <= array.count - 1, array[k+1] < array[k] {
+            rightSide += 1
+            k += 1
+        }
+        
+        let sum = leftSide + rightSide + 1
+        if sum > longestPeak {
+            longestPeak = sum
+        }
+    }
+    
+    return longestPeak
+}
+
+// Notes: Solution 2 is better than solution 1 here because the memory complexity of solution 1 is worst case O(n). Solution 2 solves this memory problem by not storing potential peaks in an array and iterating through the array and only counting the left and right sides if the point in the array is a potential peak.
+
+// Solution 2 - AlgoExpert Solution
+// Time - O(n)
+// Space - O(1)
+func longestPeak2(array: [Int]) -> Int {
+    var longestPeak = 0
+    var potentialPeaks = [Int]()
+    
+    if array.count < 3 {
+        return 0
+    }
+    
+    for i in 1 ..< array.count - 1 {
+        if array[i] > array[i-1] && array[i] > array[i+1] {
+            potentialPeaks.append(i)
+        }
+    }
+
+    for i in 0 ..< potentialPeaks.count {
+        // count the left
+        var leftSide = 0
+        var j = potentialPeaks[i]
+        while j-1 >= 0, array[j-1] < array[j] {
+            leftSide += 1
+            j -= 1
+        }
+        
+        // count the right
+        var rightSide = 0
+        var k = potentialPeaks[i]
+        while k+1 <= array.count - 1, array[k+1] < array[k] {
+            rightSide += 1
+            k += 1
+        }
+        
+        // sum
+        let sum = leftSide + rightSide + 1
+        if sum > longestPeak {
+            longestPeak = sum
+        }
+    }
+    
+    return longestPeak
+}
 
 // --------------------------------------------------------------------------------------------------------------------------------
 
