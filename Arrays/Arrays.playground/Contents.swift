@@ -671,6 +671,109 @@ func longestPeak2(array: [Int]) -> Int {
 // Hard - (Q9-Q13)
 // Question 9 - Four Number Sum
 
+// Solution 1 - Brute force
+// Time - O(n^4)
+// Space - O(n)
+func fourNumberSum(array: [Int], targetSum: Int) -> [[Int]] {
+    var output = [[Int]]()
+    let myArray = array.sorted()
+    
+    for i in 0 ..< myArray.count - 3 {
+        for j in i+1 ..< myArray.count - 2 {
+            for k in j+1 ..< myArray.count - 1 {
+                for l in k+1 ..< myArray.count {
+                    if myArray[i] + myArray[j] + myArray[k] + myArray[l] == targetSum {
+                        output.append([myArray[i], myArray[j], myArray[k], myArray[l]])
+                    }
+                }
+            }
+        }
+    }
+    
+    return output
+}
+
+// Solution 2 - Using Pointers
+// Time - O(n^3)
+// TODO: Space - O(?)
+func fourNumberSum2(array: [Int], targetSum: Int) -> [[Int]] {
+    var output = [[Int]]()
+    let myArray = array.sorted()
+    
+    for i in 0 ..< myArray.count - 3 {
+        for j in i+1 ..< myArray.count - 2 {
+            
+            let firstBase = myArray[i]
+            let secondBase = myArray[j]
+            
+            var leftPointer = j+1
+            var rightPointer = myArray.count - 1
+            
+            while leftPointer < rightPointer {
+                let leftValue = myArray[leftPointer]
+                let rightValue = myArray[rightPointer]
+                let sum = firstBase + secondBase + leftValue + rightValue
+                
+                if sum < targetSum {
+                    leftPointer += 1
+                } else if sum > targetSum {
+                    rightPointer -= 1
+                } else {
+                    output.append([firstBase, secondBase, leftValue, rightValue])
+                    leftPointer += 1
+                }
+            }
+        }
+    }
+    
+    return output
+}
+
+// Solution 3 - AlgoExpert Solution, finding pairs + hash table (PREFERRED SOLUTION, HOWEVER NOT SIMPLEST)
+// Time - O(n^2)
+// Space - O(n^2)
+func fourNumberSum3(array: [Int], targetSum: Int) -> [[Int]] {
+    var output = [[Int]]()
+    var hashTable = [Int: [[Int]]]()
+    
+    for i in 1 ..< array.count - 1 {
+        
+        for j in i+1 ..< array.count {
+            let current = array[i] + array[j]
+            let diff = targetSum - current
+            
+            if let matchingPairs = hashTable[diff] {
+                for pair in matchingPairs {
+                    var newEntry = [Int]()
+                    newEntry.append(contentsOf: [pair[0], pair[1], array[i], array[j]])
+                    output.append(newEntry)
+                }
+            }
+        }
+        
+        // Adding pairs (before current) to hash table
+        var beforeCounter = 0
+        while beforeCounter < i {
+            let sum = array[beforeCounter] + array[i]
+            if hashTable[sum] == nil {
+                hashTable[sum] = [[array[beforeCounter], array[i]]]
+            } else {
+                hashTable[sum]?.append([array[beforeCounter], array[i]])
+            }
+            beforeCounter += 1
+        }
+    }
+    
+    return output
+}
+
+// Note:
+// The key to this solution is the fact that we only add key-value pairs to the hashtable for pairs to the left of the current index in the array. This is to avoid duplicate solutions. Note also the hash table logic is at the end of the for i in loop, not at the start.
+
+
+var array = [5, -5, -2, 2, 3, -3]
+fourNumberSum3(array: array, targetSum: 0)
+
 // Question 10 - Subarray Sort
 
 // Question 11 - Largest Range
