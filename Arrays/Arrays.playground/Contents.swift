@@ -771,10 +771,52 @@ func fourNumberSum3(array: [Int], targetSum: Int) -> [[Int]] {
 // The key to this solution is the fact that we only add key-value pairs to the hashtable for pairs to the left of the current index in the array. This is to avoid duplicate solutions. Note also the hash table logic is at the end of the for i in loop, not at the start.
 
 
-var array = [5, -5, -2, 2, 3, -3]
-fourNumberSum3(array: array, targetSum: 0)
 
 // Question 10 - Subarray Sort
+
+// Solution 1 - Swapping method
+// Time - O(n)
+// Space - O(n) Note: This can and should be optimized.
+func subarraySort(array: [Int]) -> [Int] {
+    
+    var outOfPlaceIndex = [Int]()
+    var largestValue = 0
+    var newArray = array
+    var minIndex = Int.max
+    var maxIndex = Int.max
+    
+    for i in 0 ..< array.count - 1 {
+        
+        if array[i] > largestValue {
+            largestValue = array[i]
+        }
+        
+        if array[i+1] < largestValue {
+            outOfPlaceIndex.append(i+1)
+        }
+    }
+    
+    if outOfPlaceIndex.isEmpty {
+        return [-1,-1]
+    } else {
+        maxIndex = outOfPlaceIndex.max()!
+    }
+    
+    for i in outOfPlaceIndex {
+        var j = i
+        while j-1 >= 0, newArray[j] < newArray[j-1]{
+            (newArray[j-1], newArray[j]) = (newArray[j], newArray[j-1])
+            if j-1 < minIndex {
+                minIndex = j-1
+            }
+            j -= 1
+        }
+    }
+    
+    return [minIndex, maxIndex]
+}
+
+subarraySort(array: [1, 2, 4, 7, 10, 11, 7, 12, 6, 7, 16, 18, 19])
 
 // Question 11 - Largest Range
 
