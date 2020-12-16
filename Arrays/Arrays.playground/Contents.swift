@@ -818,7 +818,63 @@ func subarraySort(array: [Int]) -> [Int] {
 
 subarraySort(array: [1, 2, 4, 7, 10, 11, 7, 12, 6, 7, 16, 18, 19])
 
+
+
 // Question 11 - Largest Range
+
+// Solution 1 - Hash table
+// Time - O(n)
+// Space - O(n)
+func largestRange(array: [Int]) -> [Int] {
+    var hashtable = [Int: Bool]()
+    var longestRange = 0
+    var output = [Int]()
+    
+    // create hashtable
+    for i in 0 ..< array.count {
+        hashtable[array[i]] = false
+    }
+    
+    for i in 0 ..< array.count {
+        // if we've already visited this element, don't repeat
+        if hashtable[array[i]] == true {
+            break
+        }
+        
+        // check the left range
+        var leftArray = [Int]()
+        var j = 1
+        while hashtable[array[i]-j] != nil {
+            leftArray.append(array[i]-j)
+            hashtable[array[i]-j] = true
+            j += 1
+        }
+        
+        // check the right range
+        var rightArray = [Int]()
+        var k = 1
+        while hashtable[array[i]+k] != nil {
+            rightArray.append(array[i]+k)
+            hashtable[array[i]+k] = true
+            k += 1
+        }
+        
+        // update the longest range
+        let completeArray : [Int] = leftArray.reversed() + [array[i]] + rightArray
+        let totalRange = completeArray.count
+        let lowerBound = completeArray.min()!
+        let upperBound = completeArray.max()!
+        
+        if totalRange > longestRange {
+            longestRange = totalRange
+            output = [lowerBound, upperBound]
+        }
+    }
+    
+    return output
+}
+
+
 
 // Question 12 - Min Awards
 
