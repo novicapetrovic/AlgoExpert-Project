@@ -878,6 +878,138 @@ func largestRange(array: [Int]) -> [Int] {
 
 // Question 12 - Min Awards
 
+// My First Attempt
+// Time - O(n)
+// Space - O(n)
+func minRewards(_ scores: [Int]) -> Int {
+    var rewardsArray = convertArrayToZeros(array: scores)
+    let minimumIndexes = findMinimumIndexes(array: scores)
+    var outputArray = setMinimumsToOne(zerosArray: &rewardsArray, minimums: minimumIndexes)
+
+    for localMinIndex in minimumIndexes {
+        expandFromLocalMinIndex(scoresArray: scores, outputArray: &outputArray, localMinIndex: localMinIndex)
+    }
+    return sumRewardsArray(rewardsArray: outputArray)
+}
+
+func convertArrayToZeros(array: [Int]) -> [Int] {
+    var output: [Int] = []
+    for _ in 0 ..< array.count {
+        output.append(0)
+    }
+    return output
+}
+
+func findMinimumIndexes(array: [Int]) -> [Int] {
+    // Handling case for array size 1
+    if array.count == 1 {
+        return [0]
+    }
+
+    var minimumIndexes: [Int] = []
+
+    if array[0] < array[1] {
+        minimumIndexes.append(0)
+    }
+
+    for i in 1 ..< array.count - 1 {
+        if array[i] < array[i-1] && array[i] < array[i+1] {
+            minimumIndexes.append(i)
+        }
+    }
+
+    if array[array.count - 1] < array[array.count - 2] {
+        minimumIndexes.append(array.count - 1)
+    }
+
+    return minimumIndexes
+}
+
+func setMinimumsToOne(zerosArray: inout [Int], minimums: [Int]) -> [Int] {
+    for i in 0 ..< minimums.count {
+        zerosArray[minimums[i]] = 1
+    }
+
+    return zerosArray
+}
+
+func expandFromLocalMinIndex(scoresArray: [Int], outputArray: inout [Int], localMinIndex: Int) {
+
+    // Left expansion
+    var leftIndex = localMinIndex - 1
+
+    while leftIndex >= 0, scoresArray[leftIndex] > scoresArray[leftIndex + 1] {
+        outputArray[leftIndex] = max(outputArray[leftIndex], outputArray[leftIndex + 1] + 1)
+        leftIndex -= 1
+    }
+
+    // Right expansion
+    var rightIndex = localMinIndex + 1
+
+    while rightIndex < scoresArray.count, scoresArray[rightIndex] > scoresArray[rightIndex - 1] {
+        outputArray[rightIndex] = max(outputArray[rightIndex], outputArray[rightIndex - 1] + 1)
+        rightIndex += 1
+    }
+}
+
+func sumRewardsArray(rewardsArray: [Int]) -> Int {
+    var sum = 0
+    for i in 0 ..< rewardsArray.count {
+        sum += rewardsArray[i]
+    }
+
+    return sum
+}
+
+
+// Solution 1 - Naive solution
+// Time - O(n^2)
+// Space - O(n)
+
+func minRewards2(_ scores: [Int]) -> Int {
+    var rewards = Array(repeating: 1, count: scores.count)
+
+    for i in 1 ..< scores.count {
+        var j = i - 1
+
+        if scores[i] > scores[j] {
+            rewards[i] = rewards[j] + 1
+        } else {
+            while j >= 0, scores[j] > scores[j+1] {
+                rewards[j] = max(rewards[j], rewards[j + 1] + 1)
+                j -= 1
+            }
+        }
+    }
+    return rewards.reduce(0) { $0 + $1 }
+}
+
+// Solution 2 - Optimal solution
+// Time - O(n)
+// Space - O(n)
+
+func minRewards3(_ scores: [Int]) -> Int {
+    var rewards = Array(repeating: 1, count: scores.count)
+
+    for i in stride(from: 1, to: scores.count, by: 1) {
+        if scores[i] > scores[i - 1] {
+            rewards[i] = rewards[i - 1] + 1
+        }
+    }
+
+    for i in stride(from: scores.count - 2, to: 0, by: -1) {
+        if scores[i] > scores[i + 1] {
+            rewards[i] = max(rewards[i], rewards[i + 1] + 1)
+        }
+    }
+
+    return rewards.reduce(0) { $0 + $1 }
+}
+
+
+// Explanation:
+// Iterating from left to right, then right to left, comparing the value that comes before them (after them when iterating right to left)
+
 // Question 13 - Zigzag Traverse
 
 // --------------------------------------------------------------------------------------------------------------------------------
