@@ -1012,6 +1012,204 @@ func minRewards3(_ scores: [Int]) -> Int {
 
 // Question 13 - Zigzag Traverse
 
+// Solution 1 - Failed initial attempt. My initial observation was that there were 4 unique direction; down, left, up-right and down-left. My approach was to come up with a set of logic to determine when each arrow should be used. This ended up being over-complicated and resulted in a long answer. I probably could've got this solution to work with some more effort but I ended up giving up on it to pursue a more elegant solution.
+enum CurrentDirection: Equatable {
+    case right
+    case down
+    case upRight
+    case downLeft
+}
+
+func zigZagTraverse(array: [[Int]]) -> [Int] {
+
+    // Helper variables
+    var currentRow = 0
+    var currentCol = 0
+    let endRow = array.count - 1
+    let endCol = array[0].count - 1
+    var currentPosition = (currentRow, currentCol)
+    let endPosition = (array.count, array[0].count)
+
+    // Initialize the current direction to be .down as that's how all arrays start
+    var currentDirection: CurrentDirection = .down
+
+    // Initialize zigzagOutput with first element of the array
+    var zigzagOutput = [array[0][0]]
+
+    while currentPosition != endPosition {
+
+        // Handling the start of the zig zag
+        if currentPosition == (0,0) {
+            zigzagOutput.append(goDown(array: array, currentPosition: currentPosition))
+            currentRow += 1
+            currentPosition = (currentRow, currentCol)
+        }
+
+        // Handling the upright
+        if (currentCol == 0 || currentRow == endRow) && (currentDirection == .down || currentDirection == .right) {
+            while currentRow != 0 || currentCol != endCol {
+                zigzagOutput.append(goUpRight(array: array, currentPosition: currentPosition))
+                currentDirection = .upRight
+                currentRow += 1
+                currentCol += 1
+                currentPosition = (currentRow, currentCol)
+            }
+        }
+
+        // Handling the downLeft
+        if (currentRow == 0 || currentCol == endCol) && (currentDirection == .down || currentDirection == .right) {
+            while currentRow != 0 || currentCol != endCol {
+                zigzagOutput.append(goDownLeft(array: array, currentPosition: currentPosition))
+                currentDirection = .downLeft
+                currentRow += 1
+                currentCol -= 1
+                currentPosition = (currentRow, currentCol)
+            }
+        }
+
+        // Handling the down
+        if (currentCol == 0 || currentCol == endCol) && (currentDirection == .downLeft || currentDirection == .upRight) {
+            zigzagOutput.append(goDown(array: array, currentPosition: currentPosition))
+            currentDirection = .down
+            currentRow += 1
+            currentPosition = (currentRow, currentCol)
+        }
+
+        // Handling the right
+        if (currentRow == 0 || currentRow == endRow) && (currentDirection == .downLeft || currentDirection == .upRight) {
+            zigzagOutput.append(goRight(array: array, currentPosition: currentPosition))
+            currentDirection = .right
+            currentCol += 1
+            currentPosition = (currentRow, currentCol)
+        }
+    }
+
+    return zigzagOutput
+}
+
+// Helper functions
+func goDown(array: [[Int]], currentPosition: (Int, Int)) -> Int {
+    return array[currentPosition.0 + 1][currentPosition.1]
+}
+
+func goRight(array: [[Int]], currentPosition: (Int, Int)) -> Int {
+    return array[currentPosition.0][currentPosition.1 + 1]
+}
+
+func goUpRight(array: [[Int]], currentPosition: (Int, Int)) -> Int {
+    return array[currentPosition.0 - 1][currentPosition.1 + 1]
+}
+
+func goDownLeft(array: [[Int]], currentPosition: (Int, Int)) -> Int {
+    return array[currentPosition.0 + 1][currentPosition.1 - 1]
+}
+
+
+// Solution 2 - My working solution. The crux of my answer revolves around seeing the zigzag as diagonal arrows starting with a down arrow for the first element. Once you calculate how many arrows are required to traverse the whole array, your main logic revolves around figuring out the starting point for the arrow. You know that for down arrows you will either be on the first row or the end column, and for the up arrows you will either be on the first col or end row. The main logic in determining where the starting point should be revolves around determining which row/col the arrow will start on. Once you have that logic, the rest of the solution is pretty straight forward.
+// Time - O(n)
+// Space - O(n)
+func zigZagTraverse2(array: [[Int]]) -> [Int] {
+    var output = [Int]()
+    let numberOfDiagonalTraversalsNeed = array.count + array[0].count - 1
+    let numberOfRows = array.count
+    let numberOfColumns = array[0].count
+    let endRow = array.count - 1
+    let endCol = array[0].count - 1
+
+    for i in 0 ..< numberOfDiagonalTraversalsNeed {
+        print(output)
+
+        if i % 2 == 0  {
+            // Going down
+            var startingPoint = (0,0)
+            if i > endCol {
+                startingPoint = (i - numberOfColumns + 1, endCol)
+            } else {
+                startingPoint = (0, i)
+            }
+            var currentPoint = startingPoint
+
+            while (currentPoint.0 >= 0 && currentPoint.0 < numberOfRows) && (currentPoint.1 >= 0 && currentPoint.1 < numberOfColumns) {
+                output.append(array[currentPoint.0][currentPoint.1])
+                currentPoint = (currentPoint.0 + 1, currentPoint.1 - 1)
+            }
+
+        } else if i % 2 == 1 {
+            // Going up
+            var startingPoint = (0,0)
+            if i > endRow {
+                startingPoint = (endRow, i - numberOfRows + 1)
+            } else {
+                startingPoint = (i, 0)
+            }
+            var currentPoint = startingPoint
+
+            while (currentPoint.0 >= 0 && currentPoint.0 < numberOfRows) && (currentPoint.1 >= 0 && currentPoint.1 < numberOfColumns) {
+                output.append(array[currentPoint.0][currentPoint.1])
+                currentPoint = (currentPoint.0 - 1, currentPoint.1 + 1)
+            }
+        }
+    }
+
+    return output
+}
+
+
+// Solution 3 (AlgoExpert solution with my added optimizations) I prefer my solution because it effectively only has 2 directions, the up-right diagonal and the down-left diagonal, making it much easier to visualize. 
+// Time - O(n)
+// Space - O(n)
+func zigZagTraverse3(array: [[Int]]) -> [Int] {
+    var output = [Int]()
+
+    var goingDown = true
+    var currentRow = 0
+    var currentCol = 0
+
+    let startRow = 0
+    let startCol = 0
+
+    let endRow = array.count - 1
+    let endCol = array[0].count - 1
+
+    while currentRow <= endRow && currentCol <= endCol {
+        output.append(array[currentRow][currentCol])
+
+        if goingDown == true {
+            if currentCol == startCol || currentRow == endRow {
+                if currentRow == endRow {
+                    // Go Right
+                    currentCol += 1
+                } else {
+                    // Go Down
+                    currentRow += 1
+                }
+                goingDown = false
+            } else {
+                // Go down-left
+                currentRow += 1
+                currentCol -= 1
+            }
+        } else {
+            if currentRow == startRow || currentCol == endCol {
+                if currentCol == endCol {
+                    // Go Down
+                    currentRow += 1
+                } else {
+                    // Go Right
+                    currentCol += 1
+                }
+                goingDown = true
+            } else {
+                // Go up-right
+                currentRow -= 1
+                currentCol += 1
+            }
+        }
+    }
+
+    return output
+}
+
 // --------------------------------------------------------------------------------------------------------------------------------
 
 // Very Hard - (Q14-Q15)
