@@ -1155,7 +1155,7 @@ func zigZagTraverse2(array: [[Int]]) -> [Int] {
 }
 
 
-// Solution 3 (AlgoExpert solution with my added optimizations) I prefer my solution because it effectively only has 2 directions, the up-right diagonal and the down-left diagonal, making it much easier to visualize. 
+// Solution 3 (AlgoExpert solution with my added optimizations) I prefer my solution because it effectively only has 2 directions, the up-right diagonal and the down-left diagonal, making it much easier to visualize.
 // Time - O(n)
 // Space - O(n)
 func zigZagTraverse3(array: [[Int]]) -> [Int] {
@@ -1214,6 +1214,122 @@ func zigZagTraverse3(array: [[Int]]) -> [Int] {
 
 // Very Hard - (Q14-Q15)
 // Question 14 - Apartment Hunting
+
+// Solution 1 - AlgoExpert solution
+// Time - O(B^2 * R)
+// Space - O(B)
+// Where B - Blocks, R - Requirements
+
+func apartmentHunting(_ blocks: [[String: Bool]], _ requirements: [String]) -> Int {
+    var maxDistancesAtBlocks = Array(repeating: -Int.max, count: blocks.count)
+
+    for i in 0 ..< blocks.count {
+        for requirement in requirements {
+            var closestReqDistance = Int.max
+
+            for j in 0 ..< blocks.count {
+                if let requirementAvailable = blocks[j][requirement], requirementAvailable {
+                    closestReqDistance = min(closestReqDistance, distanceBetween(i, j))
+                }
+            }
+
+            maxDistancesAtBlocks[i] = max(maxDistancesAtBlocks[i], closestReqDistance)
+        }
+    }
+
+    return getIndexAtMinValue(maxDistancesAtBlocks)
+}
+
+func getIndexAtMinValue(_ array: [Int]) -> Int {
+    var indexAtMinValue = 0
+    var minValue = Int.max
+
+    for i in 0 ..< array.count {
+        let currentValue = array[i]
+
+        if currentValue < minValue {
+            minValue = currentValue
+            indexAtMinValue = i
+        }
+    }
+
+    return indexAtMinValue
+}
+
+func distanceBetween(_ a: Int, _ b: Int) -> Int {
+    return abs(a - b)
+}
+
+
+// Solution 2 - AlgoExpert Solution
+// Time - O(BR)
+// Space - O(BR)
+// Notes: I would hesitate to say which out of the 2 solutions for this question is better since there is a trade off in terms of time and space complexity.
+
+func apartmentHunting2(_ blocks: [[String: Bool]], _ requirements: [String]) -> Int {
+    let minDistancesFromBlocks = requirements.map { getMinDistances(blocks, $0) }
+    let maxDistancesAtBlocks = getMaxDistancesAtBlocks(blocks, minDistancesFromBlocks)
+
+    return getIndexAtMinValue2(maxDistancesAtBlocks)
+}
+
+func getMinDistances(_ blocks: [[String: Bool]], _ requirement: String) -> [Int] {
+    var minDistances = Array(repeating: -1, count: blocks.count)
+    var closestRequirementIndex = Int.max
+
+    for i in 0 ..< blocks.count {
+        if let requirementAvailable = blocks[i][requirement], requirementAvailable {
+            closestRequirementIndex = i
+        }
+
+        minDistances[i] = distanceBetween(i, closestRequirementIndex)
+    }
+
+    for i in (0 ..< blocks.count).reversed() {
+        if let requirementAvailable = blocks[i][requirement], requirementAvailable {
+            closestRequirementIndex = i
+        }
+
+        minDistances[i] = min(minDistances[i], distanceBetween2(i, closestRequirementIndex))
+    }
+
+    return minDistances
+}
+
+func getMaxDistancesAtBlocks(_ blocks: [[String: Bool]], _ minDistancesFromBlocks: [[Int]]) -> [Int] {
+    var maxDistancesAtBlocks = Array(repeating: -1, count: blocks.count)
+
+    for i in 0 ..< blocks.count {
+        let minDistancesAtBlock = minDistancesFromBlocks.map { $0[i] }
+
+        if let max = minDistancesAtBlock.max() {
+            maxDistancesAtBlocks[i] = max
+        }
+    }
+
+    return maxDistancesAtBlocks
+}
+
+func getIndexAtMinValue2(_ array: [Int]) -> Int {
+    var indexAtMinValue = 0
+    var minValue = Int.max
+
+    for i in 0 ..< array.count {
+        let currentValue = array[i]
+
+        if currentValue < minValue {
+            minValue = currentValue
+            indexAtMinValue = i
+        }
+    }
+
+    return indexAtMinValue
+}
+
+func distanceBetween2(_ a: Int, _ b: Int) -> Int {
+    return abs(a - b)
+}
+
 
 // Question 15 - Calendar Matching
 
